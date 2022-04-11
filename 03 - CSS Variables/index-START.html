@@ -21,6 +21,22 @@
   <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
+    :root{ /* Tomamos el elemento mas alto posible */
+      --spacing: 10px; /* utilizamos --"nombre" para definir una variable a la que inicializamos con un valor (en este caso hacemos que coincida con el valor del input) */
+      --blur: 10px;
+      --base: #ffc600;
+      
+    }
+
+    img{
+      padding: var(--spacing); /* designamos la variable declarada como valor de la propiedad deseada */
+      filter: blur(var(--blur));      
+      background-color: var(--base);
+    }
+
+    .hl{
+      color: var(--base);
+    }
 
     /*
       misc styles, nothing to do with CSS variables
@@ -45,6 +61,20 @@
   </style>
 
   <script>
+    const inputs = document.querySelectorAll('.controls input'); //Seleccionamos todos los inputs. IMPORTANTE "querySelectorAll()" devuelve un NodeList, similar a un arreglo en estructura pero con menos métodos utilizables
+    
+    function handleUpdate(){ //cuando se produce un cambio de valor o un movimiento del mouse sobre uno de los elementos "inputs", el .addEventListener llama a la funcion con la información del input en el que se produjo el cambio que triggerea la funcion
+      const suffix = this.dataset.sizing || ''; //declaramos esta constante a la que le asignamos el valor de "sizing", que es uno de las propiedades contenidos en el "dataset", que es un objeto que guarda todos los datos del elemento HTML que empiecen con
+// la propiedad "data-'algo'", en caso de que "sizing no exista dentro de 'dataset'" o que "dataset" no exista porque no haya ninguna propiedad "data-'algo'", se le asignará un string vacío.
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix) //elegimos el elemento documento propiamente dicho y le añadimos propiedades de estilo con
+//el nombre de la propiedad va a ser una variable por eso "--" y le concatenamos el valor contenido en la etiqueta "name" del elemento que llama a la funcion.
+//como valor le asignamos el valor de la propiedad "value" de dicho elemento html y le concatenamos el valor almacenado en sizing, para que se complete correctamente la unidad de medida necesaria-
+    }
+
+    inputs.forEach(input => input.addEventListener('change', handleUpdate)); //escuchamos el evento de cambio de valor de cualquiera de los inputs y llamamos a la funcion para realizar cambios
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate)); //también escuchamos el evento producido por el movimiento del mouse por encima de cualquier innput. este nos devuelve el valor igaulmente
+
+    
   </script>
 
 </body>

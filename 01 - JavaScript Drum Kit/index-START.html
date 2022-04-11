@@ -58,29 +58,54 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
-  window//para escuchar un evento primero designamos el ambiente en el cual vamos a escuchar dicho envento, en este caso "window", podría ser un elemento de un archivo, el propio documento una ventana o una XMLHttpRequest.
-    .addEventListener('keydown', function(e){  //luego llamamos al método .addEventListener('tipo de evento a escuchar', 'listener u objeto que recibe la notificacion cuando ocurre el evento del tipo especificado, ya sea un objeto que implemente la interfaz EventListener o una funcion', 'useCapture[opcional]:boolean, si es true captura todos los eventos del tipo especificado para controlar la propagacion de eventos REVISAR')  
-      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); //creamos la constante audio a la que le asignamos un querySelector elemento (por eso es querySelector y no querySelectorAll). querySelector(selectoresDeCSS)
-  //dentro del documento, devuelve el primer elemento que sea de tipo audio con un atributo data-key que sea igual al valor de la propiedad "keyCode" del evento escuchado
-      const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); // creamos la constante "key" para que devuelva el div con la clase "key" con un valor de "data-key=" al valor del "keyCode" del evento, es decir de la tecla presionada
-      if(!audio) return; //si la constante audio devuelve false, es decir que no encontró un elemento que coincida con los parámetros de búsqueda proporcionados, la funcion se detiene.
-      audio.currentTime = 0; // rebobinamos a 0
-      audio.play(); //si audio es true (es decir, si se encontró un elemento acorde) lo reproducimos
-    //pero como no se puede reproducir nuevavemente un audio que ya está en reproducción no podríamos reproducir de nuevo este audio aunque presionemos la misma tecla, por eso debemos rebobinar el audio a 0 antes de darle play
-      key.classList.add('playing'); //a la constante "key" (div correspondiente a la tecla presionada), le agregamos una clase llamada "playing" (ya definida en CSS), para generar una animación
-      // 
-    });  
+//   // *_*_*_*_* CODIGO EN ORDEN PARA FACILITAR SU ENTENDIMIENTO *_*_*_*_*_*_* //
+//   window//para escuchar un evento primero designamos el ambiente en el cual vamos a escuchar dicho envento, en este caso "window", podría ser un elemento de un archivo, el propio documento una ventana o una XMLHttpRequest.
+//     .addEventListener('keydown', function(e){  //luego llamamos al método .addEventListener('tipo de evento a escuchar', 'listener u objeto que recibe la notificacion cuando ocurre el evento del tipo especificado, ya sea un objeto que implemente la interfaz EventListener o una funcion', 'useCapture[opcional]:boolean, si es true captura todos los eventos del tipo especificado para controlar la propagacion de eventos REVISAR')  
+//       const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); //creamos la constante audio a la que le asignamos un querySelector elemento (por eso es querySelector y no querySelectorAll). querySelector(selectoresDeCSS)
+//   //dentro del documento, devuelve el primer elemento que sea de tipo audio con un atributo data-key que sea igual al valor de la propiedad "keyCode" del evento escuchado
+//       const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); // creamos la constante "key" para que devuelva el div con la clase "key" con un valor de "data-key=" al valor del "keyCode" del evento, es decir de la tecla presionada
+//       if(!audio) return; //si la constante audio devuelve false, es decir que no encontró un elemento que coincida con los parámetros de búsqueda proporcionados, la funcion se detiene.
+//       audio.currentTime = 0; // rebobinamos a 0
+//       audio.play(); //si audio es true (es decir, si se encontró un elemento acorde) lo reproducimos
+//     //pero como no se puede reproducir nuevavemente un audio que ya está en reproducción no podríamos reproducir de nuevo este audio aunque presionemos la misma tecla, por eso debemos rebobinar el audio a 0 antes de darle play
+//       key.classList.add('playing'); //a la constante "key" (div correspondiente a la tecla presionada), le agregamos una clase llamada "playing" (ya definida en CSS), para generar una animación
+//       // 
+//     });  
        
-  function removeTransition(e){//le pasamos el evento que escuchamos, que contiene tantos arreglos de objetos como propiedades con transición se hayan escuchado al presionar una tecla
-  //estos arreglos contienen todas las transiciones que se realizaron en el elemento "key of keys", en este caso, "border-color", "box-shadow", "transform"
-    if(e.propertyName !== 'transform') return; //seleccionamos una para realizar comprobaciones, en este caso, si en todo el evento no hay una propiedad "propertyName" con un valor igual a "transform", cierre la funcion
-    this.classList.remove('playing');//this hace referencia al div que disparo la llamada a la funcion porque fue en el que se detectó el "transitionend"
-//al div que tuvo el evento "transitionend" le removemos la clase "playing"
+//   function removeTransition(e){//le pasamos el evento que escuchamos, que contiene tantos arreglos de objetos como propiedades con transición se hayan escuchado al presionar una tecla
+//   //estos arreglos contienen todas las transiciones que se realizaron en el elemento "key of keys", en este caso, "border-color", "box-shadow", "transform"
+//     if(e.propertyName !== 'transform') return; //seleccionamos una para realizar comprobaciones, en este caso, si en todo el evento no hay una propiedad "propertyName" con un valor igual a "transform", cierre la funcion
+//     this.classList.remove('playing');//this hace referencia al div que disparo la llamada a la funcion porque fue en el que se detectó el "transitionend"
+// //al div que tuvo el evento "transitionend" le removemos la clase "playing"
+//   }  
+
+//   const keys = document.querySelectorAll('.key')//creamos la constante "keys" y seleccionamos todos los elementos que tengan asignada la clase "key", es decir, un arreglo con todos los divs 
+//   keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+// //recorremos el arreglo de divs "keys", y a cada uno de los elementos del mismo le añadimos un addEventListener que escuche cuando una transición termina con el evento "transitionend" y cuando eso suceda, que ejecute la funcion "removeTransition"
+
+// *_*_*_*_*_* CODIGO DELEGANDO CORRECTAMENTE EN FUNCIONES ESPECIFICAS*_*_*_*_*_*_*_
+
+function playSound(e){
+  const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); 
+  const key = document.querySelector(`.key[data-key="${e.keyCode}"]`); 
+  if(!audio) return; 
+  audio.currentTime = 0; 
+  audio.play();
+  key.classList.add('playing');
+}
+
+
+       
+  function removeTransition(e){
+    if(e.propertyName !== 'transform') return;
+    this.classList.remove('playing');
   }  
 
-  const keys = document.querySelectorAll('.key')//creamos la constante "keys" y seleccionamos todos los elementos que tengan asignada la clase "key", es decir, un arreglo con todos los divs 
+  const keys = document.querySelectorAll('.key') 
   keys.forEach(key => key.addEventListener('transitionend', removeTransition));
-//recorremos el arreglo de divs "keys", y a cada uno de los elementos del mismo le añadimos un addEventListener que escuche cuando una transición termina con el evento "transitionend" y cuando eso suceda, que ejecute la funcion "removeTransition"
+
+  window.addEventListener('keydown', playSound);  
+
 </script>
 
 
